@@ -182,9 +182,16 @@ describe('AuthContext', () => {
           name: "Don't have an account? Sign up",
         })
       );
+      changeInputValue(rendered, 'First name', 'testFirst');
+      changeInputValue(rendered, 'Last name', 'testLast');
       changeInputValue(rendered, 'Email', 'testEmail@gmail.com');
       changeInputValue(rendered, 'Password', 'testPassword');
       changeInputValue(rendered, 'Password (confirm)', 'testPassword');
+      fireEvent.click(
+        rendered.getByLabelText(
+          'I want to receive marketing promotions and updates via email.'
+        )
+      );
       fireEvent.click(rendered.getByRole('button', { name: 'Sign up' }));
       await waitFor(() =>
         expect(Auth.signUp).toBeCalledWith({
@@ -192,6 +199,9 @@ describe('AuthContext', () => {
           password: 'testPassword',
           attributes: {
             email: 'testEmail@gmail.com',
+            given_name: 'testFirst',
+            family_name: 'testLast',
+            'custom:allow_marketing': 'true',
           },
         })
       );
@@ -216,6 +226,9 @@ describe('AuthContext', () => {
           password: 'testPassword',
           attributes: {
             email: 'testEmail@gmail.com',
+            given_name: '',
+            family_name: '',
+            'custom:allow_marketing': 'false',
           },
         })
       );

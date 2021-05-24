@@ -66,9 +66,9 @@ export function AuthContextProvider({
       password: values.password,
       attributes: {
         email: values.email,
-        // given_name: values.firstName,
-        // family_name: values.lastName,
-        // allow_marketing: values.allowMarketing,
+        given_name: values.firstName,
+        family_name: values.lastName,
+        'custom:allow_marketing': values.allowMarketing.toString(),
       },
     });
     toast.success('Account created');
