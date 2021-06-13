@@ -2,7 +2,7 @@ import { Link, Grid, Box } from '@material-ui/core';
 import * as Yup from 'yup';
 import { InputField } from '../InputField';
 import { CheckboxField } from '../CheckboxField';
-import { authActions } from '../../contexts';
+import * as authActions from '../../contexts/AuthContext/actions';
 import { AuthForm } from '../AuthForm';
 import React from 'react';
 

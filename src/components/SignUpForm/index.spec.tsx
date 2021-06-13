@@ -1,6 +1,6 @@
 import { render, fireEvent, waitFor } from '@testing-library/react';
 import { changeInputValue } from '../AuthForm/formUtilities.spec';
-import { authActions } from '../../contexts';
+import * as authActions from '../../contexts/AuthContext/actions';
 import { SignUpForm } from './';
 
 describe('SignUpForm', () => {

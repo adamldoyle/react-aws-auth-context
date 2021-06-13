@@ -1,5 +1,5 @@
 node_modules
-.parcel-cache
+build
 dist
 coverage
 .env

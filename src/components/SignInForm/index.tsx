@@ -1,7 +1,7 @@
 import { Link, Box, Grid } from '@material-ui/core';
 import * as Yup from 'yup';
 import { InputField } from '../InputField';
-import { authActions } from '../../contexts';
+import * as authActions from '../../contexts/AuthContext/actions';
 import { AuthForm } from '../AuthForm';
 
 const Schema = Yup.object({
