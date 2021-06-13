@@ -7,10 +7,10 @@ import 'react-toastify/dist/ReactToastify.css';
 Amplify.configure({
   Auth: {
     mandatorySignIn: true,
-    region: process.env.SB_AWS_REGION ?? process.env.AWS_REGION,
-    userPoolId: process.env.SB_AWS_POOLID ?? process.env.AWS_POOL_ID,
+    region: process.env.STORYBOOK_AWS_REGION ?? process.env.AWS_REGION,
+    userPoolId: process.env.STORYBOOK_AWS_POOL_ID ?? process.env.AWS_POOL_ID,
     userPoolWebClientId:
-      process.env.SB_AWS_CLIENT_ID ?? process.env.AWS_CLIENT_ID,
+      process.env.STORYBOOK_AWS_CLIENT_ID ?? process.env.AWS_CLIENT_ID,
   },
 });
 
