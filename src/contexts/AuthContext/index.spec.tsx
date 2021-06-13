@@ -10,7 +10,9 @@ const buildSession = (
   email = 'testEmail@gmail.com',
   firstName = 'Joe',
   lastName = 'Schmo',
-  allowMarketing = true
+  allowMarketing = true,
+  idJwtToken = 'idJwtToken',
+  accessJwtToken = 'accessJwtToken'
 ) => ({
   getIdToken: () => ({
     payload: {
@@ -19,6 +21,10 @@ const buildSession = (
       family_name: lastName,
       'custom:allow_marketing': allowMarketing,
     },
+    getJwtToken: () => idJwtToken,
+  }),
+  getAccessToken: () => ({
+    getJwtToken: () => accessJwtToken,
   }),
 });
 
@@ -38,13 +44,17 @@ describe('AuthContext', () => {
       window.location = oldWindowLocation;
     });
 
-    const renderComponent = () => {
+    const renderComponent = (sessionPingDelay = undefined) => {
       return render(
-        <AuthContextProvider>
+        <AuthContextProvider sessionPingDelay={sessionPingDelay}>
           <AuthContext.Consumer>
             {({ session, signOut }) => (
               <>
                 <span>Authenticated</span>
+                <span>ID: {session.getIdToken?.().getJwtToken?.()}</span>
+                <span>
+                  Access: {session.getAccessToken?.().getJwtToken?.()}
+                </span>
                 <button type="button" onClick={signOut}>
                   Sign out
                 </button>
@@ -374,6 +384,39 @@ describe('AuthContext', () => {
       await waitFor(() =>
         expect(rendered.queryByText('Authenticated')).not.toBeNull()
       );
+    });
+
+    it('keeps session up to date if sessionPingDelay provided', async () => {
+      (Auth.currentSession as jest.Mock).mockResolvedValue(
+        buildSession(
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          'idToken1',
+          'accessToken1'
+        )
+      );
+      const rendered = renderComponent(1);
+      await waitFor(() =>
+        expect(rendered.queryByText('ID: idToken1')).not.toBeNull()
+      );
+      expect(rendered.queryByText('Access: accessToken1')).not.toBeNull();
+      (Auth.currentSession as jest.Mock).mockResolvedValue(
+        buildSession(
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          'idToken2',
+          'accessToken2'
+        )
+      );
+      jest.runAllTimers();
+      await waitFor(() =>
+        expect(rendered.queryByText('ID: idToken2')).not.toBeNull()
+      );
+      expect(rendered.queryByText('Access: accessToken2')).not.toBeNull();
     });
 
     it('handles signing out', async () => {

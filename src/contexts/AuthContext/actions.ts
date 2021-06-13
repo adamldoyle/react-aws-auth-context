@@ -63,10 +63,18 @@ export function reducer(state: IAuthState, action: IAuthAction): IAuthState {
           profile: null,
         };
       }
+      if (
+        session.getIdToken().getJwtToken() ===
+          state.session?.getIdToken().getJwtToken() &&
+        session.getAccessToken().getJwtToken() ===
+          state.session.getAccessToken().getJwtToken()
+      ) {
+        return state;
+      }
       const idPayload = session.getIdToken().payload;
       return {
         ...state,
-        session: action.payload.session,
+        session,
         profile: {
           email: idPayload.email,
           firstName: idPayload.given_name ?? '',

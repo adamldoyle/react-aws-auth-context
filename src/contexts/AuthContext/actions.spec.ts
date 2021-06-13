@@ -35,13 +35,17 @@ describe('AuthContext actions', () => {
             family_name: 'Schmo',
             'custom:allow_marketing': 'true',
           },
+          getJwtToken: () => 'idJwtToken',
+        }),
+        getAccessToken: () => ({
+          getJwtToken: () => 'accessJwtToken',
         }),
       } as any;
       const result = actions.reducer(
         {
           authMode: actions.AuthMode.SIGN_UP,
           email: 'testEmail@gmail.com',
-          session: { oldSession: true } as any,
+          session: null,
         },
         actions.actions.updateSession(newSession)
       );
@@ -65,13 +69,17 @@ describe('AuthContext actions', () => {
             email: 'testEmail@gmail.com',
             'custom:allow_marketing': 'true',
           },
+          getJwtToken: () => 'idJwtToken',
+        }),
+        getAccessToken: () => ({
+          getJwtToken: () => 'accessJwtToken',
         }),
       } as any;
       const result = actions.reducer(
         {
           authMode: actions.AuthMode.SIGN_UP,
           email: 'testEmail@gmail.com',
-          session: { oldSession: true } as any,
+          session: null,
         },
         actions.actions.updateSession(newSession)
       );
@@ -86,6 +94,42 @@ describe('AuthContext actions', () => {
           allowMarketing: true,
         },
       });
+    });
+
+    it('does not update session if jwt tokens are the same as current state', () => {
+      const newSession = {
+        getIdToken: () => ({
+          payload: {
+            email: 'testEmail@gmail.com',
+            given_name: 'Joe',
+            family_name: 'Schmo',
+            'custom:allow_marketing': 'true',
+          },
+          getJwtToken: () => 'idJwtToken',
+        }),
+        getAccessToken: () => ({
+          getJwtToken: () => 'accessJwtToken',
+        }),
+      } as any;
+      const currentState = {
+        authMode: actions.AuthMode.SIGN_UP,
+        email: 'testEmail@gmail.com',
+        session: {
+          getIdToken: () =>
+            ({
+              getJwtToken: () => 'idJwtToken',
+            } as any),
+          getAccessToken: () =>
+            ({
+              getJwtToken: () => 'accessJwtToken',
+            } as any),
+        } as any,
+      };
+      const result = actions.reducer(
+        currentState,
+        actions.actions.updateSession(newSession)
+      );
+      expect(result).toEqual(currentState);
     });
 
     it('switches mode in state on SWITCH_MODE', () => {

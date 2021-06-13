@@ -46,4 +46,6 @@ const Template: Story<AuthContextProviderProps> = (args) => (
 );
 
 export const Default = Template.bind({});
-Default.args = {};
+Default.args = {
+  sessionPingDelay: 1,
+};

@@ -30,10 +30,12 @@ const handleSignOut = async () => {
 
 export interface AuthContextProviderProps {
   children: React.ReactNode;
+  sessionPingDelay?: number;
 }
 
 export function AuthContextProvider({
   children,
+  sessionPingDelay = -1,
 }: AuthContextProviderProps): JSX.Element {
   const [state, dispatch] = useReducer(authReducer, {
     authMode: AuthMode.SIGN_IN,
@@ -52,7 +54,14 @@ export function AuthContextProvider({
 
   useEffect(() => {
     updateSession();
-  }, [updateSession]);
+    if (sessionPingDelay < 1) {
+      return;
+    }
+    const timeout = setTimeout(() => {
+      updateSession();
+    }, sessionPingDelay * 60 * 1000);
+    return () => clearTimeout(timeout);
+  }, [updateSession, sessionPingDelay]);
 
   const handleSignUp = async (values: SignUpValues) => {
     const result = await Auth.signUp({
