@@ -11,9 +11,11 @@ export default {
 const Template: Story<AuthContextProviderProps> = (args) => (
   <AuthContextProvider {...args}>
     <AuthContext.Consumer>
-      {({ session, signOut }) => (
+      {({ session, profile, signOut }) => (
         <Box>
           <Typography variant="h4">Authenticated</Typography>
+          <Typography variant="h6">Profile</Typography>
+          <p>{JSON.stringify(profile)}</p>
           <Typography variant="h6">ID payload</Typography>
           <ul>
             {Object.entries(session.getIdToken().payload).map(

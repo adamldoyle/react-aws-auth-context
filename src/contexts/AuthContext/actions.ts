@@ -1,4 +1,5 @@
 import { CognitoUserSession } from 'amazon-cognito-identity-js';
+import { IProfile } from './types';
 
 export enum AuthMode {
   SIGN_UP = 'SIGN_UP',
@@ -13,6 +14,7 @@ export interface IAuthState {
   authMode: AuthMode;
   email?: string;
   session?: CognitoUserSession | null;
+  profile?: IProfile | null;
 }
 
 interface IUpdateSession {
@@ -53,9 +55,24 @@ export type IAuthAction = IUpdateSession | ISwitchMode;
 export function reducer(state: IAuthState, action: IAuthAction): IAuthState {
   switch (action.type) {
     case 'UPDATE_SESSION':
+      const session = action.payload.session;
+      if (session === null) {
+        return {
+          ...state,
+          session: null,
+          profile: null,
+        };
+      }
+      const idPayload = session.getIdToken().payload;
       return {
         ...state,
         session: action.payload.session,
+        profile: {
+          email: idPayload.email,
+          firstName: idPayload.given_name ?? '',
+          lastName: idPayload.family_name ?? '',
+          allowMarketing: idPayload['custom:allow_marketing'] === 'true',
+        },
       };
     case 'SWITCH_MODE':
       return {

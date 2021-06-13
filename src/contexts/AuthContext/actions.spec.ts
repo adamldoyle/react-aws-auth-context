@@ -26,19 +26,65 @@ describe('AuthContext actions', () => {
   });
 
   describe('reducer', () => {
-    it('stores session in state on UPDATE_SESSION', () => {
+    it('stores session and profile in state on UPDATE_SESSION', () => {
+      const newSession = {
+        getIdToken: () => ({
+          payload: {
+            email: 'testEmail@gmail.com',
+            given_name: 'Joe',
+            family_name: 'Schmo',
+            'custom:allow_marketing': 'true',
+          },
+        }),
+      } as any;
       const result = actions.reducer(
         {
           authMode: actions.AuthMode.SIGN_UP,
           email: 'testEmail@gmail.com',
           session: { oldSession: true } as any,
         },
-        actions.actions.updateSession({ mockSession: true } as any)
+        actions.actions.updateSession(newSession)
       );
       expect(result).toEqual({
         authMode: actions.AuthMode.SIGN_UP,
         email: 'testEmail@gmail.com',
-        session: { mockSession: true },
+        session: newSession,
+        profile: {
+          email: 'testEmail@gmail.com',
+          firstName: 'Joe',
+          lastName: 'Schmo',
+          allowMarketing: true,
+        },
+      });
+    });
+
+    it('stores empty string for first and last name if not provided', () => {
+      const newSession = {
+        getIdToken: () => ({
+          payload: {
+            email: 'testEmail@gmail.com',
+            'custom:allow_marketing': 'true',
+          },
+        }),
+      } as any;
+      const result = actions.reducer(
+        {
+          authMode: actions.AuthMode.SIGN_UP,
+          email: 'testEmail@gmail.com',
+          session: { oldSession: true } as any,
+        },
+        actions.actions.updateSession(newSession)
+      );
+      expect(result).toEqual({
+        authMode: actions.AuthMode.SIGN_UP,
+        email: 'testEmail@gmail.com',
+        session: newSession,
+        profile: {
+          email: 'testEmail@gmail.com',
+          firstName: '',
+          lastName: '',
+          allowMarketing: true,
+        },
       });
     });
 

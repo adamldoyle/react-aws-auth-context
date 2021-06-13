@@ -1,5 +1,4 @@
 import React, { useEffect, useReducer, useCallback } from 'react';
-import { CognitoUserSession } from 'amazon-cognito-identity-js';
 import { Auth } from 'aws-amplify';
 import { toast } from 'react-toastify';
 import {
@@ -20,12 +19,7 @@ import {
   reducer as authReducer,
   actions as authActions,
 } from './actions';
-
-export interface IAuthContext {
-  session: CognitoUserSession;
-  updateSession: () => Promise<void>;
-  signOut: () => void;
-}
+import { IAuthContext } from './types';
 
 export const AuthContext = React.createContext<IAuthContext>(undefined);
 
@@ -142,7 +136,12 @@ export function AuthContextProvider({
   if (state.session) {
     return (
       <AuthContext.Provider
-        value={{ session: state.session, updateSession, signOut }}
+        value={{
+          session: state.session,
+          profile: state.profile,
+          updateSession,
+          signOut,
+        }}
       >
         {children}
       </AuthContext.Provider>

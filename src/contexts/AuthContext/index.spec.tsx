@@ -6,6 +6,22 @@ import { AuthContext, AuthContextProvider } from './';
 jest.useFakeTimers();
 jest.mock('aws-amplify');
 
+const buildSession = (
+  email = 'testEmail@gmail.com',
+  firstName = 'Joe',
+  lastName = 'Schmo',
+  allowMarketing = true
+) => ({
+  getIdToken: () => ({
+    payload: {
+      email,
+      given_name: firstName,
+      family_name: lastName,
+      'custom:allow_marketing': allowMarketing,
+    },
+  }),
+});
+
 describe('AuthContext', () => {
   describe('AuthContextProvider', () => {
     let oldWindowLocation;
@@ -128,7 +144,7 @@ describe('AuthContext', () => {
     it('supports signing in', async () => {
       (Auth.signIn as jest.Mock).mockResolvedValue({ signInUserSession: {} });
       const rendered = await renderNoSession();
-      (Auth.currentSession as jest.Mock).mockResolvedValue({ session: true });
+      (Auth.currentSession as jest.Mock).mockResolvedValue(buildSession());
       changeInputValue(rendered, 'Email', 'testEmail@gmail.com');
       changeInputValue(rendered, 'Password', 'testPassword');
       fireEvent.click(rendered.getByRole('button', { name: 'Sign in' }));
@@ -353,7 +369,7 @@ describe('AuthContext', () => {
     });
 
     it('renders children if already signed in', async () => {
-      (Auth.currentSession as jest.Mock).mockResolvedValue({ session: true });
+      (Auth.currentSession as jest.Mock).mockResolvedValue(buildSession());
       const rendered = renderComponent();
       await waitFor(() =>
         expect(rendered.queryByText('Authenticated')).not.toBeNull()
@@ -361,7 +377,7 @@ describe('AuthContext', () => {
     });
 
     it('handles signing out', async () => {
-      (Auth.currentSession as jest.Mock).mockResolvedValue({ session: true });
+      (Auth.currentSession as jest.Mock).mockResolvedValue(buildSession());
       const rendered = renderComponent();
       await waitFor(() =>
         expect(rendered.queryByText('Authenticated')).not.toBeNull()
